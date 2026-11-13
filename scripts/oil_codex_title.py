@@ -32,7 +32,7 @@ DEFAULTS = {
     "max_parallel_workers": 2,
 }
 EMOJI = ("🎬", "🧩", "🔎", "📝", "📅", "🎨", "⚙️", "💬")
-POLICY_VERSION = 8
+POLICY_VERSION = 9
 
 
 def data_dir():

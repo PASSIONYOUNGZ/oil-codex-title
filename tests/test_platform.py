@@ -89,6 +89,17 @@ class PlatformTests(unittest.TestCase):
         with patch('codex_adapter.sys.platform', 'win32'), patch('codex_adapter.shutil.which', side_effect=lambda name: exe if name=='codex.exe' else None):
             self.assertEqual(find_codex(), exe)
 
+    def test_windows_store_location_beats_legacy_npm_when_native_not_on_path(self):
+        exe = self.root / "app/resources/codex.exe"
+        exe.parent.mkdir(parents=True)
+        exe.touch()
+        result = SimpleNamespace(returncode=0, stdout=str(exe) + "\n")
+        with patch("codex_adapter.sys.platform", "win32"), \
+                patch("codex_adapter.shutil.which", side_effect=lambda name: "old-npm.cmd" if name == "codex" else None), \
+                patch("codex_adapter.process_options", return_value={}), \
+                patch("codex_adapter.subprocess.run", return_value=result):
+            self.assertEqual(find_codex(), str(exe))
+
     def test_windows_paths_cannot_leak_into_titles(self):
         for name in (r'🧩 C:\Users\example\app｜修复', r'🧩 \\server\private｜修复', '🧩 C:/Users/example/app｜修复'):
             with self.subTest(name=name), self.assertRaises(ValueError):

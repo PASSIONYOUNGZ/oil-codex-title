@@ -1,0 +1,97 @@
+[
+  {
+    "id": "首轮主题清晰",
+    "context": {
+      "current_title": "修复导出报表重复表头",
+      "project_hint": "",
+      "original_goal": "导出报表的 CSV 文件每隔 100 行就会重复写入表头。请修复，让表头只出现在第一行。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "导出报表的 CSV 文件每隔 100 行就会重复写入表头。请修复，让表头只出现在第一行。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "contains": [
+        "报表",
+        "表头"
+      ],
+      "reject": [],
+      "emoji": "🧩",
+      "object_contains": [
+        "报表"
+      ]
+    }
+  },
+  {
+    "id": "首轮主题不足",
+    "context": {
+      "current_title": "新对话",
+      "project_hint": "",
+      "original_goal": "我想先聊聊，有些东西还没想好。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "我想先聊聊，有些东西还没想好。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "keep",
+      "contains": [],
+      "reject": [],
+      "exact_title": "新对话"
+    }
+  },
+  {
+    "id": "第二轮明确主题",
+    "context": {
+      "current_title": "新对话",
+      "project_hint": "",
+      "original_goal": "我想先聊聊，有些东西还没想好。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "我想先聊聊，有些东西还没想好。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "我想整理客户访谈的提问方法，写一份给同事用的操作指南。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "contains": [
+        "访谈"
+      ],
+      "reject": [],
+      "emoji": "📝",
+      "object_contains": [
+        "访谈"
+      ]
+    }
+  }
+]

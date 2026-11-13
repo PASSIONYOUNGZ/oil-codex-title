@@ -54,6 +54,23 @@ def windows_binary(path):
     raise BackendError("未找到 npm 入口对应的 codex.exe；请重装 Codex CLI 或通过 configure --codex-bin 指定原生路径")
 
 
+def windows_desktop_binary() -> str | None:
+    powershell = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32/WindowsPowerShell/v1.0/powershell.exe"
+    command = (
+        "$app = Get-AppxPackage -Name OpenAI.Codex | Select-Object -First 1; "
+        "if ($app) { [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false); "
+        "Join-Path $app.InstallLocation 'app/resources/codex.exe' }"
+    )
+    try:
+        result = subprocess.run([str(powershell), "-NoProfile", "-NonInteractive", "-Command", command],
+                                capture_output=True, encoding="utf-8", errors="replace", timeout=5,
+                                **process_options())
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    path = result.stdout.strip()
+    return path if result.returncode == 0 and path and Path(path).is_file() else None
+
+
 def find_codex(explicit: str | None = None) -> str:
     if explicit:
         resolved = shutil.which(explicit)
@@ -67,7 +84,7 @@ def find_codex(explicit: str | None = None) -> str:
                 if candidate.is_file() and os.access(candidate, os.X_OK):
                     return str(candidate)
     if sys.platform == "win32":
-        path = shutil.which("codex.exe") or shutil.which("codex")
+        path = shutil.which("codex.exe") or windows_desktop_binary() or shutil.which("codex")
         if path:
             return windows_binary(path)
         raise BackendError("未找到 Windows Codex CLI；请将 codex.exe 加入 PATH，或通过 configure --codex-bin 指定路径")
