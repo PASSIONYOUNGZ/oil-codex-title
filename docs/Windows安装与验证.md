@@ -17,7 +17,7 @@ py -3 scripts/oil_codex_title.py doctor
 py -3 scripts/oil_codex_title.py configure --codex-bin 'C:\Codex\codex.exe'
 ```
 
-第二条仅在默认检测找不到正确 CLI 时使用，替换为实际存在的路径。
+第二条仅在默认检测找不到正确 CLI 时使用，替换为实际存在的路径。Codex 更新后如果旧路径失效，可运行 `py -3 scripts/oil_codex_title.py configure --auto-codex-bin` 恢复自动发现，再运行 `doctor` 确认可执行文件和 App Server。
 
 ## 已适配的行为
 

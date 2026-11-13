@@ -76,7 +76,7 @@ def find_codex(explicit: str | None = None) -> str:
         resolved = shutil.which(explicit)
         if resolved:
             return windows_binary(resolved) if sys.platform == "win32" else resolved
-        raise BackendError("配置的 Codex 可执行文件不存在")
+        raise BackendError("配置的 Codex 可执行文件不存在。请更新路径，或运行 configure --auto-codex-bin 恢复自动发现")
     if sys.platform == "darwin":
         for base in (Path("/Applications"), Path.home() / "Applications"):
             for app in ("ChatGPT.app", "Codex.app"):

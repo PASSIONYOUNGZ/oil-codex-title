@@ -496,6 +496,25 @@ class TitleTests(unittest.TestCase):
         self.assertIsNone(config["service_tier"])
         self.assertEqual(config["future"], 1)
 
+    def test_restore_auto_codex_discovery_with_stale_config(self):
+        config_path = self.root / "config.json"
+        title.atomic_json(config_path, {
+            "codex_bin": str(self.root / "removed" / "codex.exe"),
+            "recent_turns": 4,
+            "future": "preserved",
+        })
+        env = os.environ | {"OIL_CODEX_TITLE_DATA": str(self.root)}
+        command = [sys.executable, str(ROOT / "scripts/oil_codex_title.py")]
+        before = subprocess.run(command + ["doctor"], capture_output=True, encoding="utf-8", env=env)
+        self.assertEqual(before.returncode, 1)
+        self.assertIn("--auto-codex-bin", json.loads(before.stdout)["message"])
+
+        result = subprocess.run(command + ["configure", "--auto-codex-bin"],
+                                capture_output=True, encoding="utf-8", env=env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIsNone(json.loads(result.stdout)["codex_bin"])
+        self.assertEqual(title.read_json(config_path), {"recent_turns": 4, "future": "preserved"})
+
     def test_fast_option_maps_to_priority_service(self):
         env = os.environ | {"OIL_CODEX_TITLE_DATA": str(self.root)}
         proc = subprocess.run([sys.executable, str(ROOT / "scripts/oil_codex_title.py"),

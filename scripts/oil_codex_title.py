@@ -500,7 +500,9 @@ def main():
     sub.add_parser("resume", help="恢复自动命名")
     p = sub.add_parser("configure", help="配置独立命名模型或兼容的可执行文件")
     p.add_argument("--model")
-    p.add_argument("--codex-bin")
+    binary_options = p.add_mutually_exclusive_group()
+    binary_options.add_argument("--codex-bin", help="使用指定的 Codex 可执行文件")
+    binary_options.add_argument("--auto-codex-bin", action="store_true", help="清除固定路径，恢复自动发现")
     p.add_argument("--service-tier", choices=("standard", "fast"))
     for name in ("rename", "lock", "unlock"):
         p = sub.add_parser(name)
@@ -534,7 +536,9 @@ def main():
                     # 新模型未必支持 Fast；切换模型时不继承旧模型的服务档位。
                     if args.model != config["model"] and not args.service_tier:
                         changes["service_tier"] = None
-                if args.codex_bin:
+                if args.auto_codex_bin:
+                    changes.pop("codex_bin", None)
+                elif args.codex_bin:
                     changes["codex_bin"] = find_codex(args.codex_bin)
                 if args.service_tier:
                     changes["service_tier"] = "priority" if args.service_tier == "fast" else None
